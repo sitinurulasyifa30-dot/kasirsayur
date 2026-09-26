@@ -15,7 +15,22 @@ jobs:
         run: |
           unzip -q KasirSayuran_Android_Project.zip
           cd KasirSayuran
-          echo "Project extracted"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+          s = p.read_text()
+
+          s = s.replace("JavaVersion.VERSION_1_8", "JavaVersion.VERSION_17")
+          s = s.replace('jvmTarget = "1.8"', 'jvmTarget = "17"')
+          s = s.replace("jvmTarget = '1.8'", "jvmTarget = '17'")
+
+          p.write_text(s)
+          print("Java/Kotlin target disesuaikan ke 17")
+          PY
+
+          echo "Project extracted and Java/Kotlin target fixed"
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -25,7 +40,6 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
-        
 
       - name: Install Android SDK
         run: |
